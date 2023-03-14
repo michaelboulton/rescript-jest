@@ -179,8 +179,16 @@ module Runner = (A: Asserter) => {
     }, inputs)
 
   let testAllJson = (name, inputs, callback) => List.iter(input => {
-      let f =  Js.Json.stringifyAny(input)->Belt.Option.getExn
-      let name = j`$name - ${f}`
+      let asString = Js.Json.stringifyAny(input)->Belt.Option.getExn
+      let testName =
+        asString
+        ->Js.Json.parseExn
+        ->Js.Json.decodeObject
+        ->Belt.Option.flatMap(elem => elem->Js.Dict.get("input"))
+        ->Belt.Option.map(Js.Json.stringify)
+        ->Belt.Option.getWithDefault(asString)
+
+      let name = j`$name - ${testName}`
       _test(name, () => {
         affirm(callback(input))
         Js.undefined
@@ -192,9 +200,9 @@ module Runner = (A: Asserter) => {
       _testPromise(
         name,
         () => Promise.then(callback(input), a => a->A.affirm->Promise.resolve),
-      Js.Undefined.fromOption(timeout)
-    )
-  }, inputs)
+        Js.Undefined.fromOption(timeout),
+      )
+    }, inputs)
 
   @val external describe: (string, @uncurry (unit => Js.undefined<unit>)) => unit = "describe"
   let describe = (label, f) =>

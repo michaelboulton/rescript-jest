@@ -3,6 +3,8 @@
 var List = require("rescript/lib/js/list.js");
 var $$Array = require("rescript/lib/js/array.js");
 var Curry = require("rescript/lib/js/curry.js");
+var Js_dict = require("rescript/lib/js/js_dict.js");
+var Js_json = require("rescript/lib/js/js_json.js");
 var Belt_Option = require("rescript/lib/js/belt_Option.js");
 var Js_undefined = require("rescript/lib/js/js_undefined.js");
 
@@ -259,8 +261,13 @@ function testAll(name, inputs, callback) {
 
 function testAllJson(name, inputs, callback) {
   return List.iter((function (input) {
-                var f = Belt_Option.getExn(JSON.stringify(input));
-                var name$1 = "" + name + " - " + f;
+                var asString = Belt_Option.getExn(JSON.stringify(input));
+                var testName = Belt_Option.getWithDefault(Belt_Option.map(Belt_Option.flatMap(Js_json.decodeObject(JSON.parse(asString)), (function (elem) {
+                                return Js_dict.get(elem, "input");
+                              })), (function (prim) {
+                            return JSON.stringify(prim);
+                          })), asString);
+                var name$1 = "" + name + " - " + testName;
                 test(name$1, (function () {
                         affirm(Curry._1(callback, input));
                         
@@ -958,8 +965,13 @@ function Runner(funarg) {
   };
   var testAllJson = function (name, inputs, callback) {
     return List.iter((function (input) {
-                  var f = Belt_Option.getExn(JSON.stringify(input));
-                  var name$1 = "" + name + " - " + f;
+                  var asString = Belt_Option.getExn(JSON.stringify(input));
+                  var testName = Belt_Option.getWithDefault(Belt_Option.map(Belt_Option.flatMap(Js_json.decodeObject(JSON.parse(asString)), (function (elem) {
+                                  return Js_dict.get(elem, "input");
+                                })), (function (prim) {
+                              return JSON.stringify(prim);
+                            })), asString);
+                  var name$1 = "" + name + " - " + testName;
                   test(name$1, (function () {
                           Curry._1(affirm, Curry._1(callback, input));
                           
