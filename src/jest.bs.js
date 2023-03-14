@@ -257,6 +257,18 @@ function testAll(name, inputs, callback) {
               }), inputs);
 }
 
+function testAllJson(name, inputs, callback) {
+  return List.iter((function (input) {
+                var f = Belt_Option.getExn(JSON.stringify(input));
+                var name$1 = "" + name + " - " + f;
+                test(name$1, (function () {
+                        affirm(Curry._1(callback, input));
+                        
+                      }));
+                
+              }), inputs);
+}
+
 function testAllPromise(name, inputs, timeout, callback) {
   return List.iter((function (input) {
                 var name$1 = "" + name + " - " + input;
@@ -1191,6 +1203,7 @@ exports.test = test$1;
 exports.testAsync = testAsync;
 exports.testPromise = testPromise;
 exports.testAll = testAll;
+exports.testAllJson = testAllJson;
 exports.testAllPromise = testAllPromise;
 exports.describe = describe$1;
 exports.beforeAllAsync = beforeAllAsync;
