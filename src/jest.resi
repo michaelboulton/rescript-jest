@@ -11,6 +11,7 @@ module Runner: (A: Asserter) =>
   let testAsync: (string, ~timeout: int=?, (A.t<_> => unit) => unit) => unit
   let testPromise: (string, ~timeout: int=?, unit => Promise.t<A.t<_>>) => unit
   let testAll: (string, list<'a>, 'a => A.t<_>) => unit
+  let testAllJson: (string, list<'a>, 'a => A.t<_>) => unit
   let testAllPromise: (string, list<'a>, ~timeout: int=?, 'a => Promise.t<A.t<_>>) => unit
 
   let describe: (string, unit => unit) => unit
